@@ -7,7 +7,6 @@ import (
 	"errors"
 	"strings"
 	"io"
-	"github.com/valyala/fasthttp"
 	"time"
 	"fmt"
 	"encoding/json"
@@ -36,11 +35,6 @@ type (
 	}
 
 	SimpleHTTPClient struct {
-		Timeout time.Duration
-		EndpointBuilder
-	}
-
-	FastHTTPClient struct {
 		Timeout time.Duration
 		EndpointBuilder
 	}
@@ -117,32 +111,5 @@ func (sh SimpleHTTPClient) Execute(ctx context.Context, url string, obj interfac
 }
 
 func (sh SimpleHTTPClient) GetTimeout() time.Duration {
-	return DefaultTimeout
-}
-
-func (fh FastHTTPClient) Execute(ctx context.Context, url string, obj interface{}) error {
-	fmt.Println("Suggest url is", url)
-	req := fasthttp.AcquireRequest()
-	resp := fasthttp.AcquireResponse()
-	req.SetRequestURI(url)
-	req.Header.SetMethod("GET")
-	client := &fasthttp.Client{}
-	err := client.Do(req, resp)
-	if err != nil {
-		ErrLogger.Printf("cannot implement request %e: \n", err)
-		return err
-	}
-
-	defer fasthttp.ReleaseRequest(req)
-	defer fasthttp.ReleaseResponse(resp)
-	
-	if err := json.Unmarshal(resp.Body(), obj); err != nil {
-		ErrLogger.Printf("Error unmarshalling response: %s\n", err.Error())
-		return err
-	}
-	return nil
-}
-
-func (fh FastHTTPClient) GetTimeout() time.Duration {
 	return DefaultTimeout
 }

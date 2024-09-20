@@ -9,13 +9,15 @@ To use package import:
 
 	"github.com/humans-grpoup/go-yandex-maps-api/services/suggest"
 	"github.com/humans-grpoup/go-yandex-maps-api/services/httpclient"
-)```go
+)
+```
 
 Make sure that you have an API key before utilizing the package
 ``` const (
 	apiSuggest = "<API_KEY>"//Need to be substituted by your own API key
 	...
-) ```go
+) 
+```
 
 Then you can make a request to Yandex Suggest API as follows:
 
@@ -54,9 +56,10 @@ func main() {
 		log.Fatalf("Suggest error: %v", err)
 	}
 	fmt.Printf("Suggest for text is %v\n", suggestion)
-}```go
+}
+```
 
-Sturcure in retrieving by Yandex Suggest is:
+Sturcure retrieved by Yandex Suggest is:
 ```	SuggestResponse struct {
 		SuggestReqID string         `json:"suggest_reqid"`
 		Results      []SuggestResult `json:"results"`
@@ -86,7 +89,8 @@ Sturcure in retrieving by Yandex Suggest is:
 	Distance struct {
 		Value float64 `json:"value"`
 		Text  string  `json:"text"`
-	}```go
+	}
+```
 
 
 ## License

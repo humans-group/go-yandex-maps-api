@@ -18,7 +18,7 @@ type (
 )
 	
 func NewSuggest(apiKey string, baseURLs ...string) client.HTTPClient {
-	return &client.FastHTTPClient{
+	return &client.SimpleHTTPClient{
 		EndpointBuilder: &SuggestAPI {
 			endpoint:  baseURL(getURL(apiKey, baseURLs...)),
 			parameters: "",
