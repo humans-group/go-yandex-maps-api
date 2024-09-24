@@ -1,4 +1,4 @@
-module github.com/humans-grpoup/go-yandex-maps-api
+module github.com/humans-group/go-yandex-maps-api
 
 go 1.19
 
