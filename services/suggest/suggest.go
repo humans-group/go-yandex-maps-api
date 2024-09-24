@@ -1,7 +1,7 @@
 package suggest 
 import (
 	"fmt"
-	"github.com/humans-grpoup/go-yandex-maps-api/services/httpclient"
+	"github.com/humans-group/go-yandex-maps-api/services/httpclient"
 )
 // SuggestResponse represents the full response from the Yandex Suggest API.
 

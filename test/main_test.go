@@ -7,8 +7,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/humans-grpoup/go-yandex-maps-api/services/suggest"
-	"github.com/humans-grpoup/go-yandex-maps-api/services/httpclient"
+	"github.com/humans-group/go-yandex-maps-api/services/suggest"
+	"github.com/humans-group/go-yandex-maps-api/services/httpclient"
 	"github.com/stretchr/testify/assert"
 )
 
