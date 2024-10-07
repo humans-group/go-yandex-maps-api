@@ -20,8 +20,8 @@ import (
 )
 
 const (
-	apiSuggest  = "289b3faf-6a1e-4f2b-b389-77f6bf9c7547" //Need to be substituted by your own API key
-	apiGeocoder = "1b203825-74f8-4936-ab55-4a5190fd7d09" //Need to be substituted by your own API key
+	apiSuggest  = "<YOUR_SUGGEST_API_KEY>" //Need to be substituted by your own API key
+	apiGeocoder = "<YOUR_GEOCODE_API_KEY>" //Need to be substituted by your own API key
 	lat         = 69.02
 	lng         = 42.01
 	lang        = "en_US"
