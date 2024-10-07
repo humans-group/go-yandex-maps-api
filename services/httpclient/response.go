@@ -42,11 +42,11 @@ type (
 						Results string `json:"results"`
 					} `json:"GeocoderResponseMetaData"`
 				} `json:"metaDataProperty"`
-				FeatureMember []*yandexFeatureMember `json:"featureMember"`
+				FeatureMember []*YandexFeatureMember `json:"featureMember"`
 			} `json:"GeoObjectCollection"`
 		} `json:"response"`
 	}
-	yandexFeatureMember struct {
+	YandexFeatureMember struct {
 		GeoObject struct {
 			MetaDataProperty struct {
 				GeocoderMetaData struct {

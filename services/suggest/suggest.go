@@ -8,7 +8,7 @@ import (
 
 const (
 	// YandexSuggestAPI is the base URL for the Yandex Suggest API.
-	yandexSuggestAPI = "https://suggest-maps.yandex.ru/v1/suggest"
+	yandexSuggestAPI = "http://suggest-maps.yandex.ru/v1/suggest"
 )
 
 type (

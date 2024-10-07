@@ -24,7 +24,7 @@ const (
 	apiGeocoder = "1b203825-74f8-4936-ab55-4a5190fd7d09" //Need to be substituted by your own API key
 	lat         = 69.02
 	lng         = 42.01
-	lang        = "eng"
+	lang        = "en_US"
 	limit       = 5
 )
 

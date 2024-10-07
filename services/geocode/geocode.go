@@ -2,6 +2,7 @@ package geocode
 
 import (
 	"fmt"
+	"net/url"
 )
 
 const (
@@ -50,7 +51,7 @@ func (s *GeocodeAPI) ForwardGeocodeURL(address string) string {
 }
 
 func (s *GeocodeAPI) ReverseGeocodeURL(lat, lng float64) string {
-	URL := string(s.endpoint) + s.parameters + "&sco=latlng&geocode=" + fmt.Sprintf("%f,%f", lat, lng)
+	URL := string(s.endpoint) + s.parameters + "&sco=latlong&geocode=" + url.QueryEscape(fmt.Sprintf("%f,%f", lat, lng))
 	s.parameters = ""
 	return URL
 }

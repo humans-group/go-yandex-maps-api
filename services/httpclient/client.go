@@ -41,11 +41,11 @@ type (
 )
 
 func Suggest(client HTTPClient, suggestAPI *suggest.SuggestAPI, text string) (*SuggestResponse, error) {
-	return GeoRequest[SuggestResponse](client, suggestAPI.GeosuggestURL(text))
+	return GeoRequest[SuggestResponse](client, suggestAPI.GeosuggestURL(url.QueryEscape(text)))
 }
 
 func ForwardGeocode(client HTTPClient, geocodeAPI *geocode.GeocodeAPI, text string) (*GeocodeResponse, error) {
-	return GeoRequest[GeocodeResponse](client, geocodeAPI.ForwardGeocodeURL(text))
+	return GeoRequest[GeocodeResponse](client, geocodeAPI.ForwardGeocodeURL(url.QueryEscape(text)))
 }
 
 func ReverseGeocode(client HTTPClient, geocodeAPI *geocode.GeocodeAPI, lat, lng float64) (*GeocodeResponse, error) {
@@ -65,8 +65,7 @@ func GeoRequest[T any](client HTTPClient, text string) (*T, error) {
 	chErr := make(chan error, 1)
 	// Goroutine to execute the client request
 	go func(chResp chan *T, chErr chan error) {
-		fmt.Println("text is ", text, url.QueryEscape(text))
-		err := client.Execute(ctx, url.QueryEscape(text), responseParser)
+		err := client.Execute(ctx, text, responseParser)
 		if err != nil {
 			chErr <- err
 		} else {
@@ -122,5 +121,8 @@ func (sh SimpleHTTPClient) Execute(ctx context.Context, url string, obj interfac
 }
 
 func (sh SimpleHTTPClient) GetTimeout() time.Duration {
-	return DefaultTimeout
+	if sh.Timeout == 0 {
+		return DefaultTimeout
+	}
+	return sh.Timeout
 }
