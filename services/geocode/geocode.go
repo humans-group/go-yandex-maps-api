@@ -44,6 +44,10 @@ func (s *GeocodeAPI) AddLimit(limit int) {
 	s.parameters = fmt.Sprintf("%s&results=%d", s.parameters, limit)
 }
 
+func (s *GeocodeAPI) AddBoundaryBox(minlng, minlat, maxlng, maxlat float64) {
+	s.parameters = fmt.Sprintf("%s&bbox=%.6f,%.6f~%.6f,%.6f", s.parameters, minlng, minlat, maxlng, maxlng)
+}
+
 func (s *GeocodeAPI) ForwardGeocodeURL(address string) string {
 	URL := string(s.endpoint) + s.parameters + "&geocode=" + address
 	s.parameters = ""
