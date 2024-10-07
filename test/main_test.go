@@ -35,9 +35,8 @@ func TestYandexGeoSuggest(t *testing.T) {
 	ts := testServer(responseSugFound)
 	defer ts.Close()
 	clientAPI := &client.SimpleHTTPClient{}
-	suggestAPI := suggest.NewSuggestAPI(tokenSuggest, ts.URL+"/")
-	suggestAPI.AddLanguage("eng")
-	suggestion, err := client.Suggest(clientAPI, suggestAPI, "Burj")
+	suggestAPI := suggest.NewSuggestAPI(tokenSuggest, ts.URL+"/").AddLanguage("eng")
+	suggestion, err := client.Suggest(clientAPI, &suggestAPI, "Burj")
 
 	assert.NoError(t, err)
 	assert.True(t, len(suggestion.Results) > 0)
@@ -50,9 +49,8 @@ func TestYandexGeoSuggestNoResult(t *testing.T) {
 	ts := testServer(responseSugNotFound)
 	defer ts.Close()
 	clientAPI := &client.SimpleHTTPClient{}
-	suggestAPI := suggest.NewSuggestAPI(tokenSuggest, ts.URL+"/")
-	suggestAPI.AddLanguage("eng")
-	suggestion, err := client.Suggest(clientAPI, suggestAPI, "Burj")
+	suggestAPI := suggest.NewSuggestAPI(tokenSuggest, ts.URL+"/").AddLanguage("eng")
+	suggestion, err := client.Suggest(clientAPI, &suggestAPI, "Burj")
 	assert.Nil(t, err)
 	assert.Nil(t, suggestion.Results)
 }
@@ -61,9 +59,8 @@ func TestYandexForwardGeoCodeResult(t *testing.T) {
 	ts := testServer(responseGeocodeFound)
 	defer ts.Close()
 	clientAPI := &client.SimpleHTTPClient{}
-	geocodeAPI := geocode.NewGeocodeAPI(tokenGeocode, ts.URL+"/")
-	geocodeAPI.AddLanguage("en_US")
-	_, err := client.ForwardGeocode(clientAPI, geocodeAPI, "Mohammed Bin Rashid Boulevard 1")
+	geocodeAPI := geocode.NewGeocodeAPI(tokenGeocode, ts.URL+"/").AddLanguage("en_US")
+	_, err := client.ForwardGeocode(clientAPI, &geocodeAPI, "Mohammed Bin Rashid Boulevard 1")
 	assert.Nil(t, err)
 }
 
@@ -71,9 +68,8 @@ func TestYandexReverseGeoCodeResult(t *testing.T) {
 	ts := testServer(responseGeocodeFound)
 	defer ts.Close()
 	clientAPI := &client.SimpleHTTPClient{}
-	geocodeAPI := geocode.NewGeocodeAPI(tokenGeocode, ts.URL+"/")
-	geocodeAPI.AddLanguage("en_US")
-	_, err := client.ReverseGeocode(clientAPI, geocodeAPI, 69.02, 42.01)
+	geocodeAPI := geocode.NewGeocodeAPI(tokenGeocode, ts.URL+"/").AddLanguage("en_US")
+	_, err := client.ReverseGeocode(clientAPI, &geocodeAPI, 69.02, 42.01)
 	assert.Nil(t, err)
 }
 
@@ -81,9 +77,8 @@ func TestYandexForwardGeoCodeNoResult(t *testing.T) {
 	ts := testServer(responseGeocodeNotFound)
 	defer ts.Close()
 	clientAPI := &client.SimpleHTTPClient{}
-	geocodeAPI := geocode.NewGeocodeAPI(tokenGeocode, ts.URL+"/")
-	geocodeAPI.AddLanguage("en_US")
-	res, err := client.ForwardGeocode(clientAPI, geocodeAPI, "{dsaffdsa}")
+	geocodeAPI := geocode.NewGeocodeAPI(tokenGeocode, ts.URL+"/").AddLanguage("en_US")
+	res, err := client.ForwardGeocode(clientAPI, &geocodeAPI, "{dsaffdsa}")
 	assert.Nil(t, err)
 	assert.Equal(t, len(res.Response.GeoObjectCollection.FeatureMember), 0)
 }
@@ -92,9 +87,8 @@ func TestYandexServerWithTimeout(t *testing.T) {
 	ts := testServerWithDelay(responseGeocodeNotFound)
 	defer ts.Close()
 	clientAPI := &client.SimpleHTTPClient{Timeout: 100 * time.Millisecond}
-	geocodeAPI := geocode.NewGeocodeAPI(tokenGeocode, ts.URL+"/")
-	geocodeAPI.AddLanguage("en_US")
-	_, err := client.ForwardGeocode(clientAPI, geocodeAPI, "Mohammed Bin Rashid Boulevard 1")
+	geocodeAPI := geocode.NewGeocodeAPI(tokenGeocode, ts.URL+"/").AddLanguage("en_US")
+	_, err := client.ForwardGeocode(clientAPI, &geocodeAPI, "Mohammed Bin Rashid Boulevard 1")
 	if assert.Error(t, err) {
 		assert.Equal(t, err, client.ErrTimeout)
 	}

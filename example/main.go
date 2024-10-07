@@ -33,10 +33,11 @@ func main() {
 	address := "New York"
 	clientAPI := &client.SimpleHTTPClient{}
 	suggestAPI := suggest.NewSuggestAPI(apiSuggest)
-	suggestAPI.AddLanguage(lang)
-	suggestAPI.AddSearchPoint(lat, lng)
-	suggestAPI.AddLimit(limit)
-	suggestion, err := client.Suggest(clientAPI, suggestAPI, address)
+	suggestAPI = suggestAPI.
+		AddSearchPoint(lat, lng).
+		AddLimit(limit).
+		AddLanguage(lang)
+	suggestion, err := client.Suggest(clientAPI, &suggestAPI, address)
 	if err != nil {
 		log.Fatalf("Suggest error: %v", err)
 	}
@@ -44,14 +45,15 @@ func main() {
 	fmt.Printf("Suggested len are: %d\n", len(suggestion.Results))
 	fmt.Printf("Suggested 0 result are: %s\n", suggestion.Results[0].Title.Text)
 	geocodeAPI := geocode.NewGeocodeAPI(apiGeocoder)
-	geocodeAPI.AddLanguage(lang)
+	geocodeAPI = geocodeAPI.AddLanguage(lang).
+		AddLimit(limit)
 	geocodeAPI.AddLimit(limit)
-	forwardGeocodeResult, err := client.ForwardGeocode(clientAPI, geocodeAPI, address)
+	forwardGeocodeResult, err := client.ForwardGeocode(clientAPI, &geocodeAPI, address)
 	if err != nil {
 		log.Fatalf("Forward geocode error: %v", err)
 	}
 	fmt.Printf("Forward geocode result for text is %v\n", forwardGeocodeResult)
-	reverseGeocodeResult, err := client.ReverseGeocode(clientAPI, geocodeAPI, lat, lng)
+	reverseGeocodeResult, err := client.ReverseGeocode(clientAPI, &geocodeAPI, lat, lng)
 	if err != nil {
 		log.Fatalf("Reverse geocode error: %v", err)
 	}
