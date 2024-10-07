@@ -22,14 +22,6 @@ const DefaultTimeout = time.Second * 8
 var ErrTimeout = errors.New("TIMEOUT")
 
 type (
-	// EndpointBuilder defines functions that build urls for geosuggest
-	EndpointBuilder interface {
-		GeosuggestURL(address string) string
-		AddSearchPoint(lat, lng float64)
-		AddLanguage(lang string)
-		AddLimit(limit int)
-	}
-
 	HTTPClient interface {
 		Execute(ctx context.Context, url string, obj interface{}) error
 		GetTimeout() time.Duration
