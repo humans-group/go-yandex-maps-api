@@ -1,28 +1,27 @@
-package suggest 
+package suggest
+
 import (
 	"fmt"
-	"github.com/humans-group/go-yandex-maps-api/services/httpclient"
 )
+
 // SuggestResponse represents the full response from the Yandex Suggest API.
 
 const (
-    // YandexSuggestAPI is the base URL for the Yandex Suggest API.
-    yandexSuggestAPI = "https://suggest-maps.yandex.ru/v1/suggest"
+	// YandexSuggestAPI is the base URL for the Yandex Suggest API.
+	yandexSuggestAPI = "https://suggest-maps.yandex.ru/v1/suggest"
 )
+
 type (
-	baseURL string
 	SuggestAPI struct {
-		endpoint baseURL 
+		endpoint   string
 		parameters string
 	}
 )
-	
-func NewSuggest(apiKey string, baseURLs ...string) client.HTTPClient {
-	return &client.SimpleHTTPClient{
-		EndpointBuilder: &SuggestAPI {
-			endpoint:  baseURL(getURL(apiKey, baseURLs...)),
-			parameters: "",
-		},
+
+func NewSuggestAPI(apiKey string, baseURLs ...string) *SuggestAPI {
+	return &SuggestAPI{
+		endpoint:   getURL(apiKey, baseURLs...),
+		parameters: "",
 	}
 }
 
@@ -42,7 +41,7 @@ func (s *SuggestAPI) AddLanguage(lang string) {
 }
 
 func (s *SuggestAPI) AddLimit(limit int) {
-	s.parameters = fmt.Sprintf("%s&results=%d", s.parameters ,limit)
+	s.parameters = fmt.Sprintf("%s&results=%d", s.parameters, limit)
 }
 
 func (s *SuggestAPI) GeosuggestURL(address string) string {
