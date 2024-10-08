@@ -47,7 +47,6 @@ func main() {
 	geocodeAPI := geocode.NewGeocodeAPI(apiGeocoder)
 	geocodeAPI = geocodeAPI.AddLanguage(lang).
 		AddLimit(limit)
-	geocodeAPI.AddLimit(limit)
 	forwardGeocodeResult, err := client.ForwardGeocode(clientAPI, &geocodeAPI, address)
 	if err != nil {
 		log.Fatalf("Forward geocode error: %v", err)
