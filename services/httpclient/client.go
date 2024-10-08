@@ -1,16 +1,18 @@
 package client
 
 import (
-    "context"
-    "net/http"
-	"net/url"
-	"errors"
-	"strings"
-	"io"
-	"time"
-	"fmt"
+	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
 
+	"github.com/humans-group/go-yandex-maps-api/services/geocode"
+	"github.com/humans-group/go-yandex-maps-api/services/suggest"
 )
 
 // DefaultTimeout for the request execution
@@ -20,57 +22,57 @@ const DefaultTimeout = time.Second * 8
 var ErrTimeout = errors.New("TIMEOUT")
 
 type (
-	// EndpointBuilder defines functions that build urls for geosuggest
-	EndpointBuilder interface {
-		GeosuggestURL(address string) string
-		AddSearchPoint(lat, lng float64)
-		AddLanguage(lang string)
-		AddLimit(limit int)
-	}
-
-	HTTPClient interface { 
+	HTTPClient interface {
 		Execute(ctx context.Context, url string, obj interface{}) error
 		GetTimeout() time.Duration
-		EndpointBuilder
 	}
 
 	SimpleHTTPClient struct {
 		Timeout time.Duration
-		EndpointBuilder
 	}
 )
 
-func Suggest(client HTTPClient, text string) (*SuggestResponse, error) {
-	responseParser := &SuggestResponse{}
+func Suggest(client HTTPClient, suggestAPI *suggest.SuggestAPI, text string) (*SuggestResponse, error) {
+	return GeoRequest[SuggestResponse](client, suggestAPI.GeosuggestURL(url.QueryEscape(text)))
+}
+
+func ForwardGeocode(client HTTPClient, geocodeAPI *geocode.GeocodeAPI, text string) (*GeocodeResponse, error) {
+	return GeoRequest[GeocodeResponse](client, geocodeAPI.ForwardGeocodeURL(url.QueryEscape(text)))
+}
+
+func ReverseGeocode(client HTTPClient, geocodeAPI *geocode.GeocodeAPI, lat, lng float64) (*GeocodeResponse, error) {
+	return GeoRequest[GeocodeResponse](client, geocodeAPI.ReverseGeocodeURL(lat, lng))
+}
+
+// Generic function to handle different response types
+func GeoRequest[T any](client HTTPClient, text string) (*T, error) {
+	// Use the generic type T for the response
+	responseParser := new(T)
 
 	ctx, cancel := context.WithTimeout(context.TODO(), client.GetTimeout())
 	defer cancel()
 
-	type sugResp struct {
-		r *SuggestResponse
-		e error
-	}
-	ch := make(chan sugResp, 1)
-
-	go func(ch chan sugResp) {
-		err := client.Execute(ctx, client.GeosuggestURL(url.QueryEscape(text)), responseParser)
+	// A custom struct to handle both response and error
+	chResp := make(chan *T, 1)
+	chErr := make(chan error, 1)
+	// Goroutine to execute the client request
+	go func(chResp chan *T, chErr chan error) {
+		err := client.Execute(ctx, text, responseParser)
 		if err != nil {
-			ch <- sugResp{
-				r: nil,
-				e: err,
-			}
+			chErr <- err
+		} else {
+			chResp <- responseParser
 		}
-		ch <- sugResp{
-			r: responseParser,
-			e: err,
-		}
-	}(ch)
+	}(chResp, chErr)
 
+	// Handle the result or timeout
 	select {
-		case <-ctx.Done():
-			return nil, ErrTimeout
-		case res := <-ch:
-			return res.r, res.e
+	case <-ctx.Done():
+		return nil, ErrTimeout
+	case res := <-chResp:
+		return res, nil
+	case errResponse := <-chErr:
+		return nil, errResponse
 	}
 }
 
@@ -94,10 +96,10 @@ func (sh SimpleHTTPClient) Execute(ctx context.Context, url string, obj interfac
 	}
 
 	body := strings.Trim(string(data), " []")
-	if resp.StatusCode!= http.StatusOK {
-        ErrLogger.Printf("Received status code %d: %s\n", resp.StatusCode, body)
-        return fmt.Errorf("received status code %d", resp.StatusCode)
-    }
+	if resp.StatusCode != http.StatusOK {
+		ErrLogger.Printf("Received status code %d: %s\n", resp.StatusCode, body)
+		return fmt.Errorf("received status code %d", resp.StatusCode)
+	}
 	DebugLogger.Printf("Received response: %s\n", body)
 	if body == "" {
 		return nil
@@ -111,5 +113,8 @@ func (sh SimpleHTTPClient) Execute(ctx context.Context, url string, obj interfac
 }
 
 func (sh SimpleHTTPClient) GetTimeout() time.Duration {
-	return DefaultTimeout
+	if sh.Timeout == 0 {
+		return DefaultTimeout
+	}
+	return sh.Timeout
 }
