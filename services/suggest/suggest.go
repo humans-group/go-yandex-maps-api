@@ -53,6 +53,5 @@ func (s SuggestAPI) AddBoundaryBox(minlng, minlat, maxlng, maxlat float64) Sugge
 }
 func (s *SuggestAPI) GeosuggestURL(address string) string {
 	URL := string(s.endpoint) + s.parameters + "&text=" + address
-	s.parameters = ""
 	return URL
 }
